@@ -59,15 +59,12 @@ def solve(position, n):
     if position >= len(coords):
         ans = max(ans, n)
         return
-    if not right[position]:
-        for y, x in coords[position]:
-            if placeable(y, x) and board[y][x] == 1:
-                left[y-x] = right[y+x] = True
-                solve(position + 2, n + 1)
-                left[y-x] = right[y+x] = False
-            solve(position + 2, n)
-    else:
-        solve(position + 2, n)
+    for y, x in coords[position]:
+        if placeable(y, x) and board[y][x] == 1:
+            left[y-x] = right[y+x] = True
+            solve(position + 2, n + 1)
+            left[y-x] = right[y+x] = False
+    solve(position + 2, n)
     
 
 solve(0, 0)
