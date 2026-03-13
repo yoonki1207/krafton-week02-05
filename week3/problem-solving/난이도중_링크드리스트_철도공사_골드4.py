@@ -3,100 +3,100 @@
 import sys
 input = sys.stdin.readline
 
-class Station:
-    name = None
-    prev = None
-    next = None
-    def __init__(self, name, prev, next):
-        self.name = name
-        self.prev = prev
-        self.next = next
-        pass
-
-class StationLine:
-    stations = []
-    
-    def __init__(self, priorStations):
-        self.stations = [None for _ in range(1000001)]
-        prevStation = None
-
-        for station in priorStations:
-            curr_station = Station(station, prevStation, None)
-            self.stations[station] = curr_station
-            if prevStation: prevStation.next = curr_station
-            prevStation = curr_station
-        self.stations[priorStations[-1]].next = self.stations[priorStations[0]]
-        self.stations[priorStations[0]].prev = self.stations[priorStations[-1]]
-    
-    def pushNext(self, i, j):
-        curr_station = self.stations[i]
-        ret = curr_station.next.name
-        new_station = Station(j, curr_station, curr_station.next)
-        self.stations[j] = new_station
-        curr_station.next.prev = new_station
-        curr_station.next = new_station
-        return ret
-    
-    def pushPrev(self, i, j):
-        curr_station = self.stations[i]
-        prev_station = curr_station.prev
-        self.pushNext(prev_station.name, j)
-        return prev_station.name
-    
-    def popNext(self, i):
-        curr_station = self.stations[i]
-        ret = curr_station.next.name
-        nnext_station = curr_station.next.next
-        nnext_station.prev = curr_station
-        curr_station.next = nnext_station
-        return ret
-    
-    def popPrev(self, i):
-        curr_station = self.stations[i]
-        ret = curr_station.prev.name
-        pprev_station = curr_station.prev.prev
-        pprev_station.next = curr_station
-        curr_station.prev = pprev_station
-        return ret
-        
-
-    def printLine(self, i):
-        print("=== Print Station Line ===")
-        first_station = self.stations[i]
-        curr_station = first_station.next
-        print(first_station.name)
-        while curr_station != first_station:
-            print(curr_station.name)
-            curr_station = curr_station.next
-        print("=== === === === === === ===")
-
-        
-
+MAX_N = 1000001
 
 N, M = map(int, input().split())
 line = list(map(int, input().split()))
 
-station = StationLine(line)
-outputStk = [0 for _ in range(M)]
+next = [-1 for _ in range(MAX_N)]
+prev = [-1 for _ in range(MAX_N)]
+
+for i in range(len(line) - 1):
+    next[line[i]] = line[i+1]
+    prev[line[i]] = line[i-1]
+next[line[-1]] = line[0]
+if len(line) > 1:
+    prev[line[-1]] = line[-2]
+else:
+    prev[line[-1]] = line[0]
+
+def printline(station, next):
+    fin = station
+    print(station, end=' ')
+    station = next[station]
+    while station != fin:
+        print(station, end=' ')
+        station = next[station]
+    print()
+
+def pushRight(i, j):
+    next_station = next[i]
+    next[i] = j
+    prev[next_station] = j
+    next[j] = next_station
+    prev[j] = i
+    return next_station
+
+def pushLeft(i, j):
+    prev_station = prev[i]
+    prev[i] = j
+    next[prev_station] = j
+    prev[j] = prev_station
+    next[j] = i
+    return prev_station
+
+def popRight(i):
+    del_station = next[i]
+    next_station = next[del_station]
+    next[i] = next_station
+    prev[next_station] = i
+    next[del_station] = prev[del_station] = -1
+    return del_station
+
+def popLeft(i):
+    del_station = prev[i]
+    prev_station = prev[del_station]
+    prev[i] = prev_station
+    next[prev_station] = i
+    next[del_station] = prev[del_station] = -1
+    return del_station
+
+output = [0 for _ in range(M)]
 j = 0
 
 for i in range(M):
     line = input().split()
     cmd = line[0]
     if cmd == 'BN':
-        result = station.pushNext(int(line[1]), int(line[2]))
-        # station.printLine(2)
+        result = pushRight(int(line[1]), int(line[2]))
         pass
     if cmd == 'BP':
-        result = station.pushPrev(int(line[1]), int(line[2]))
+        result = pushLeft(int(line[1]), int(line[2]))
         pass
     if cmd == 'CN':
-        result = station.popNext(int(line[1]))
+        result = popRight(int(line[1]))
         pass
     if cmd == 'CP':
-        result = station.popPrev(int(line[1]))
+        result = popLeft(int(line[1]))
         pass
-    outputStk[j] = result
+    output[j] = result
     j += 1
-ans = "\n".join(map(str, outputStk))
+
+ans = '\n'.join(map(str, output))
 print(ans)
+
+'''
+1 5
+1
+BN 1 2
+BN 2 3
+BN 3 4
+CN 1
+CN 1
+1
+1
+1
+2
+3
+
+'''
