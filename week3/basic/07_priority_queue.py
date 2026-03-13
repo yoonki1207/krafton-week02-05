@@ -26,6 +26,19 @@
 
 import heapq
 
+class node:
+    def __init__(self, name, priority):
+        self.name = name
+        self.priority = priority
+    
+    def __lt__(self, other):
+        if self.priority < other.priority:
+            return True
+        elif self.priority == other.priority:
+            return self.name > other.name
+        else:
+            return False
+
 def process_emergency_room(patients):
     """
     환자를 우선순위에 따라 처리
@@ -39,18 +52,22 @@ def process_emergency_room(patients):
     # TODO: 빈 힙 생성
     heap = []
     
-    
     # TODO: 모든 환자를 힙에 추가
-    pass
+    for patient in patients:
+        heapq.heappush(heap, node(patient[0], patient[1]))
         
     processed = []
     
     # TODO: 힙이 비어있지 않은 동안 반복
     ## 힙에서 우선순위가 가장 높은 환자 꺼내기
     ## 환자 처리
+    while heap:
+        p = heapq.heappop(heap)
+        processed.append(p)
+        print(f'처리: {p.name} (우선순위: {p.priority})')
     pass
         
-    return processed
+    return [p.name for p in processed]
 
 # 테스트 케이스
 if __name__ == "__main__":
