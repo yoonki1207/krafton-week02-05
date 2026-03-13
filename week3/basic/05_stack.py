@@ -43,6 +43,15 @@ def is_valid_parentheses(s):
     ## 스택이 비어있으면 False 반환
     ## 아니면 스택에서 pop
     pass
+    for i in s:
+        if len(stack) == 0: stack.append(i)
+        elif i == ')':
+            if stack[-1] == '(':
+                stack.pop()
+        else:
+            stack.append(i)
+    return len(stack) == 0
+    
     
     # TODO: 반복이 끝나면 스택이 비어있는지 확인
     pass
