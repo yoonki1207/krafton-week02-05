@@ -40,7 +40,7 @@ class Solution:
         while q:
             neighbors = []
             # BFS
-            while q:
+            while q: # 현재 대기중인 모든 방문 대기자에 한해서
                 word = q.popleft()
                 if word == endWord:
                     return transitions + 1
@@ -52,7 +52,7 @@ class Solution:
                     for neighbor in combinations[wordRoot]: # 그룹에 해당하는 모든 word
                         if neighbor not in visitedWords: # 해당 단어를 방문해보지 않았더라면
                             visitedWords.add(neighbor) # 방문처리
-                            neighbors.append(neighbor) # Queue에 추가
+                            neighbors.append(neighbor) # 다음 턴에 방문 예정 단어 추가
             q = deque(neighbors)
             transitions += 1
 
